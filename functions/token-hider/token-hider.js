@@ -15,9 +15,11 @@ const handler = async function (event) {
     input: inputText,
   });
   request = {
-    body: sendData,
     method: 'POST',
-    'x-functions-key': MODEL2_KEY
+    body: sendData,
+    headers: {
+      'x-functions-key': MODEL2_KEY
+    }
   }
   console.log('got this far')
 
