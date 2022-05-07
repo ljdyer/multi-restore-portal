@@ -7,8 +7,11 @@ loading = false;
 loadingTimeout = '';
 inputText = '';
 
-MODEL2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
-MODEL5_URL = 'https://model5-all.azurewebsites.net/api/restore'
+MODEL_URLS = {
+    'model1': 'https://model1-spaces.azurewebsites.net/api/restore',
+    'model2': 'https://model2-spaces.azurewebsites.net/api/restore',
+    'model5': 'https://model5-all.azurewebsites.net/api/restore'
+}
 
 function get_model_key(model){
     return new Promise((resolve) =>
@@ -40,14 +43,22 @@ function run_model(url, key){
 
 async function restore() {
     model = $('#model').find(":selected").val();
-    if (model=='model2'){
-        url = MODEL2_URL
+    if (model == 'model1') {
+        url = MODEL_URLS[model]
         get_model_key(model).then(key => {
+            console.log(url, key);
+            run_model(url, key);
+        })
+    } else if (model=='model2'){
+        url = MODEL_URLS[model]
+        get_model_key(model).then(key => {
+            console.log(url, key);
             run_model(url, key);
         })
     } else if (model=='model5'){
-        url = MODEL5_URL
+        url = MODEL_URLS[model]
         get_model_key(model).then(key => {
+            console.log(url, key);
             run_model(url, key);
         })
     } else {

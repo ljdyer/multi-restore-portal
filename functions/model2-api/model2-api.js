@@ -5,9 +5,10 @@ const qs = require('qs')
 
 const handler = async function (event) {
 
-  MODEL2_KEY = process.env.MODEL2_KEY
   model = event.body;
-  if (model == 'model2'){
+  if (model = 'model1'){
+    key = process.env.MODEL1_KEY
+  } else if (model == 'model2'){
     key = process.env.MODEL2_KEY
   } else if (model == 'model5'){
     key = process.env.MODEL5_KEY
