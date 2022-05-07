@@ -6,26 +6,35 @@ loadingRefreshRate = 500;
 loading = false;
 loadingTimeout = '';
 inputText = '';
+
 MODEL_2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
 
 function restore() {
 
     model = $('#model').find(":selected").val();
     inputText = $('#input-area').val();
-    request = {
-        body: JSON.stringify(inputText),
-        method: 'post'
-    }
+
+    const sendData = JSON.stringify({
+        input: inputText,
+    });
 
     loading = true;
     startLoadingAction();
 
     if (model == 'model2'){
-        fetch("/.netlify/functions/model2-api", request).then(response => response.text().then(json_response => {
-            response = json_response;
+        fetch("/.netlify/functions/model2-api")
+        .then(response => response.text()
+        .then(json_response => {
+            response = JSON.parse(json_response);
+            API_KEY = response
+        }))
+        const headers = {
+            'x-functions-key': API_KEY
+        }
+        fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
             $('#output-area').val(response);
             stopLoadingAction();
-        }))
+        }
     }
 
     else{
