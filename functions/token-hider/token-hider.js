@@ -11,23 +11,19 @@ const handler = async function (event) {
   console.log(MODEL2_KEY)
   inputText = JSON.parse(event.body)
   console.log(inputText)
-  sendData = JSON.stringify({
+  const sendData = JSON.stringify({
     input: inputText,
   });
-  request = {
-    method: 'POST',
+  const request = {
     body: sendData,
-    headers: {
-      'x-functions-key': MODEL2_KEY
-    }
+  }
+  const headers = {
+    'x-functions-key': MODEL2_KEY
   }
   console.log('got this far')
 
   try {
-    const { data } = await axios.post(MODEL_2_URL, request)
-    // refer to axios docs for other methods if you need them
-    // for example if you want to POST data:
-    //    
+    const { data } = await axios.post(MODEL_2_URL, request, {headers: headers})
     return {
       statusCode: 200,
       body: JSON.stringify(data),
