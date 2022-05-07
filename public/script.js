@@ -1,9 +1,16 @@
 window.onload = function () {
-    const message = document.getElementById("message")
+    
     document.getElementById("button").addEventListener("click", () => {
-        console.log("hello", message)
-        fetch("/.netlify/functions/hello-world?name=" + "Netlify")
-            .then((data) => data.json())
-            .then(({ msg }) => console.log(msg) || (message.innerHTML = msg))
+        request = {
+            body: JSON.stringify('ilikebananas'),
+            method: 'post'
+        }
+
+        fetch("/.netlify/functions/token-hider", request).then(response => response.text().then(json_response => {
+            response = json_response;
+            console.log(response);
+        }))
     })
+    
+  //     // response = JSON.parse(json_response);
 }
