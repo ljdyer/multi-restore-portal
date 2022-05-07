@@ -12,26 +12,20 @@ function restore() {
 
     model = $('#model').find(":selected").val();
     inputText = $('#input-area').val();
-
-    sendData = JSON.stringify({
-        input: inputText,
-
-    });
     request = {
-        body: sendData,
-        method: 'POST',
-        'x-functions-key': MODEL2_KEY
+        body: inputText,
+        method: 'post'
     }
 
     loading = true;
     startLoadingAction();
 
     if (model == 'model2'){
-        fetch(MODEL_2_URL, request).then(response => response.text().then(json_response => {
-            response = JSON.parse(json_response);
+        fetch("/.netlify/functions/model2-api", request).then(response => response.text().then(json_response => {
+            response = json_response;
             $('#output-area').val(response);
             stopLoadingAction();
-        }));
+        }))
     }
 
     else{
