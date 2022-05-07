@@ -27,13 +27,15 @@ function restore() {
         .then(json_response => {
             response = JSON.parse(json_response);
             API_KEY = response
-        }))
-        const headers = {
-            'x-functions-key': API_KEY
-        }
-        fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
-            $('#output-area').val(response);
-            stopLoadingAction();
+        })
+        .then(API_KEY => {
+            const headers = {
+                'x-functions-key': API_KEY
+            }
+            fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
+                $('#output-area').val(response);
+                stopLoadingAction();
+            }))
         }))
     }
 
