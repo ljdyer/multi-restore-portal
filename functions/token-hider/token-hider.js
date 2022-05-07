@@ -34,9 +34,10 @@ const handler = async function (event) {
     }
   } catch (error) {
     const { data, headers, status, statusText } = error.response
+    const monkeys = 'monkeys'
     return {
       statusCode: error.response.status,
-      body: JSON.stringify({ status, statusText, headers, data, '80085' }),
+      body: JSON.stringify({ status, statusText, headers, data, monkeys }),
     }
   }
 }
