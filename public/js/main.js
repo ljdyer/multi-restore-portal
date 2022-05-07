@@ -30,7 +30,7 @@ function restore() {
             const headers = {
                 'x-functions-key': API_KEY
             }
-            fetch(MODEL_2_URL, { method: 'POST', mode: 'no-cors', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
+            fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
                 $('#output-area').val(response);
                 stopLoadingAction();
             }))
