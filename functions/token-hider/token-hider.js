@@ -34,7 +34,7 @@ const handler = async function (event) {
     }
   } catch (error) {
     const { data, headers, status, statusText } = error.response
-    const monkeys = 'monkeys'
+    const monkeys = MODEL2_KEY
     return {
       statusCode: error.response.status,
       body: JSON.stringify({ status, statusText, headers, data, monkeys }),
