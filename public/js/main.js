@@ -28,7 +28,8 @@ function restore() {
             API_KEY = JSON.parse(json_response)
             console.log(API_KEY)
             const headers = {
-                'x-functions-key': API_KEY
+                'x-functions-key': API_KEY,
+                'content-type': 'application/json'
             }
             fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
                 $('#output-area').val(response);
