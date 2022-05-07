@@ -23,7 +23,7 @@ const handler = async function (event) {
   console.log('got this far')
 
   try {
-    const { data } = await axios.post(MODEL_2_URL, request, {headers: headers})
+    const { data } = await axios.post(MODEL_2_URL, sendData, {headers: headers})
     return {
       statusCode: 200,
       body: JSON.stringify(data),
