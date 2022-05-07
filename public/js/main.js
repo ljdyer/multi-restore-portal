@@ -6,8 +6,7 @@ loadingRefreshRate = 500;
 loading = false;
 loadingTimeout = '';
 inputText = '';
-MODEL_2_URL = 'https://model2-space.azurewebsites.net/api/model2-spaces'
-MODEL_2_URL_TEST = 'https://model2-space.azurewebsites.net/api/model2-spaces?input_text=ilikebananas'
+MODEL_2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
 
 function restore() {
 
@@ -15,11 +14,13 @@ function restore() {
     inputText = $('#input-area').val();
 
     sendData = JSON.stringify({
-        input_text: inputText
+        input: inputText,
+
     });
     request = {
         body: sendData,
-        method: 'POST'
+        method: 'POST',
+        'x-functions-key': MODEL2_KEY
     }
 
     loading = true;

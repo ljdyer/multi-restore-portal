@@ -7,6 +7,17 @@
     margin: auto;
 }
 
+a, a:visited, a:hover, a:active {
+  color: inherit;
+}
+
+.current{
+    text-decoration: none;
+}
+.current:hover{
+    text-decoration: underline;
+}
+
 .extra-spacing{
     padding-bottom: 5px;
     padding-bottom: 5px;
