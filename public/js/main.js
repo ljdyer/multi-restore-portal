@@ -13,7 +13,7 @@ function restore() {
     model = $('#model').find(":selected").val();
     inputText = $('#input-area').val();
     request = {
-        body: inputText,
+        body: JSON.stringify(inputText),
         method: 'post'
     }
 
