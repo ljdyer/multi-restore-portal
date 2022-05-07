@@ -20,7 +20,7 @@ function restore() {
     request = {
         body: sendData,
         method: 'POST',
-        'x-functions-key': MODEL2_KEY
+        'x-functions-key': process.env.MODEL2_KEY
     }
 
     loading = true;
