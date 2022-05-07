@@ -24,8 +24,8 @@ function restore() {
     if (model == 'model2'){
         fetch("/.netlify/functions/model2-api")
         .then(response => response.text()
-        .then(json_response => JSON.parse(json_response)
-        .then(API_KEY => {
+        .then(json_response => {
+            API_KEY => JSON.parse(json_response)
             console.log(API_KEY)
             const headers = {
                 'x-functions-key': API_KEY
@@ -34,7 +34,7 @@ function restore() {
                 $('#output-area').val(response);
                 stopLoadingAction();
             }))
-        })))
+        }))
     }
 
     else{
