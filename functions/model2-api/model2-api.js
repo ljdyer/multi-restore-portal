@@ -8,7 +8,7 @@ const handler = async function (event) {
   MODEL2_KEY = process.env.MODEL2_KEY
   return {
     statusCode: 200,
-    body: JSON.stringify(MODEL2_KEY),
+    body: MODEL2_KEY,
   }
   // MODEL_2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
   // inputText = JSON.parse(event.body)

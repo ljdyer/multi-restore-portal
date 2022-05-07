@@ -9,42 +9,55 @@ inputText = '';
 
 MODEL_2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
 
-function restore() {
 
+function get_model_2_key(){
+    return new Promise((resolve) =>
+        fetch("/.netlify/functions/model2-api")
+            .then(response => response.text()
+                .then(response => {
+                    // console.log(response);
+                    resolve(response);
+                })
+            )
+    )
+}
+
+function make_api_call(key){
     model = $('#model').find(":selected").val();
     inputText = $('#input-area').val();
-
     const sendData = JSON.stringify({
         input: inputText,
     });
-
+    const headers = {
+        'x-functions-key': key,
+    }
+    console.log(sendData);
+    console.log(key);
+    console.log(headers);
     loading = true;
     startLoadingAction();
 
-    if (model == 'model2'){
-        fetch("/.netlify/functions/model2-api")
-        .then(response => response.text()
-        .then(json_response => {
-            API_KEY = JSON.parse(json_response);
-            console.log(API_KEY)
-            const headers = {
-                'x-functions-key': API_KEY,
-                'content-type': 'application/json'
-            }
-            fetch(MODEL_2_URL, { method: 'POST', mode: 'no-cors', headers: headers, body: sendData }).then(response => response.text().then(json_response => {
-                $('#output-area').val(response);
-                stopLoadingAction();
-            }))
-        }))
-    }
-
-    else{
-        fetch('/model', request).then(response => response.text().then(json_response => {
-            response = JSON.parse(json_response);
+    fetch(MODEL_2_URL, { method: 'POST', mode: 'no-cors', headers: headers, body: sendData })
+        .then(response => response.text().then(response => {
             $('#output-area').val(response);
             stopLoadingAction();
-        }));
-    }
+        }))
+}
+
+async function restore() {
+
+    get_model_2_key().then(key => {
+        make_api_call(key);
+    })
+    
+
+    // else{
+    //     fetch('/model', request).then(response => response.text().then(json_response => {
+    //         response = JSON.parse(json_response);
+    //         $('#output-area').val(response);
+    //         stopLoadingAction();
+    //     }));
+    // }
 };
 
 function insertRandomTEDTalk(sampleType) {
