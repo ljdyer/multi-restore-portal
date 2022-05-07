@@ -6,10 +6,12 @@ loadingRefreshRate = 500;
 loading = false;
 loadingTimeout = '';
 inputText = '';
+maxInputLength = 1000;
 
 MODEL_URLS = {
     'model1': 'https://model1-spaces.azurewebsites.net/api/restore',
     'model2': 'https://model2-spaces.azurewebsites.net/api/restore',
+    'model3': 'https://model3-caps-and-punct.azurewebsites.net/api/restore',
     'model5': 'https://model5-all.azurewebsites.net/api/restore'
 }
 
@@ -26,6 +28,10 @@ function get_model_key(model){
 
 function run_model(url, key){
     inputText = $('#input-area').val();
+    if (inputText.length === 0){
+        window.alert('You need to type something into the input area first!')
+        return;
+    }
     const sendData = JSON.stringify({
         input: inputText,
     });
@@ -43,27 +49,10 @@ function run_model(url, key){
 
 async function restore() {
     model = $('#model').find(":selected").val();
-    if (model == 'model1') {
-        url = MODEL_URLS[model]
-        get_model_key(model).then(key => {
-            console.log(url, key);
-            run_model(url, key);
-        })
-    } else if (model=='model2'){
-        url = MODEL_URLS[model]
-        get_model_key(model).then(key => {
-            console.log(url, key);
-            run_model(url, key);
-        })
-    } else if (model=='model5'){
-        url = MODEL_URLS[model]
-        get_model_key(model).then(key => {
-            console.log(url, key);
-            run_model(url, key);
-        })
-    } else {
-        window.alert(`${model} not currently available.`)
-    }
+    url = MODEL_URLS[model]
+    get_model_key(model).then(key => {
+        run_model(url, key);
+    });
 };
 
 function processInput(processAction) {
@@ -75,6 +64,7 @@ function processInput(processAction) {
     if (processAction == 'lower') {
         inputText = inputText.replaceAll(/[^a-z0-9 ]/g, '')
     }
+    inputText = inputText.substr(0,maxInputLength)
     $('#input-area').val(inputText);
 }
 
@@ -122,4 +112,6 @@ $(document).ready(function () {
     $('#restore').click(function () {
         restore();
     });
+    $('#output-area').attr('readonly', true).css("background-color", "#ffffff").addClass('no-input');
+    $('#input-area').focus().select();
 });

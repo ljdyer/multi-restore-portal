@@ -48,65 +48,8 @@ h1 {
     margin: auto;
 }
 
-.score-table{
-    margin: auto;
-    width: 50%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-spacing: 0px;
-}
-
-.score-table td{
-    width: 50%;
-    padding: 0px;
-    margin: 0px;
-}
-
-.score-display{
-    width: 200px;
-    display: inline-block;
-    margin: auto;
-    text-align: center;
-}
-
-.score{
-    font-size: 2.5em;
-}
-
-.score-desc{
-    font-size: 0.8em;
-}
-
-section {
-    margin-top: 60px;
-}
-
-/* textarea {
-    font-size: 1.5vw;
-    height: 300px;
-    max-width: 1000px;
-    margin: auto;
-    width: 100%
-} */
-
 .input-container{
     width: 100%
-}
-
-.green {
-    color: green;
-}
-
-.light-green{
-    color: limegreen;
-}
-
-.light-red{
-    color: coral;
-}
-
-.red{
-    color: red;
 }
 
 .textarea {
@@ -117,6 +60,10 @@ section {
     color: inherit;
     font: 18px/25px 'Droid Sans Mono', sans-serif;
     border-radius: 3px;
+}
+
+.no-input{
+    outline: none;
 }
 
 .textinput {
