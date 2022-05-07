@@ -5,52 +5,31 @@
 		<title>MultiRestore</title>
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Droid+Sans+Mono" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="static/js/main.js"></script>
-		{% if page == 'spaces'%}<script src="static/js/spaces.js"></script>{% endif %}
-		{% if page == 'caps_and_punct'%}<script src="static/js/capsAndPunct.js"></script>{% endif %}
-		{% if page == 'all'%}<script src="static/js/all.js"></script>{% endif %}
-		<link href="/static/css/style.css" rel="stylesheet">
+        <script src="js/main.js"></script>
+		<script src="js/all.js"></script>
+		<link href="css/style.css" rel="stylesheet">
 	</head>
 
 	<body>
 		<div class="container">
-			<h1>MultiRestore</h1>
+			<a class="current" href="spaces.html"><h1>MultiRestore</h1></a>
 		</div>
 		<div class="container">
 			<p>
-			{% if page == 'spaces'%}<b>Restore spaces</b>
-			{% else %}<a href="{{url_for('spaces')}}">Restore spaces</a>
-			{% endif %}
-			 | 
-			{% if page == 'caps_and_punct' %}<b>Restore capitalisation & punctuation</b>
-			{% else %}<a href="{{url_for('caps_and_punct')}}">Restore capitalisation & punctuation</a>
-			{% endif %}
-			 | 
-			{% if page == 'all' %}<b>Restore everything</b>
-			{% else %}<a href="{{url_for('all')}}">Restore everything</a>
-			{% endif %}
+				<a href="spaces.html">Restore spaces</a>
+				|
+				<a href="caps_and_punct.html">Restore capitalisation & punctuation</a>
+				|
+				<a class="current" href="all.html">Restore everything</a>
 			</p>
 		</div>
-		<div class="container extra-spacing">
-            <button type="button" id="insert-random">Insert random TED Talk</button>
-        </div>
         <div class="input-container">
             <textarea class="textarea textinput" spellcheck="false" id="input-area"></textarea>
         </div>
 		<div class="container extra-spacing">
             <select name="model" id="model">
-				{% if page == 'spaces'%}
-					<option value="model1">Model 1: Naive Bayes space restorer</option>
-					<option value="model2">Model 2: BiLSTM space restorer</option>
-				{% endif %}
-				{% if page == 'caps_and_punct'%}
-					<option value="model3">Model 3: CRF capitalisation & punctuation restorer</option>
-					<option value="model4">Model 4: BiLSTM capitalisation & punctuation restorer</option>
-				{% endif %}
-				{% if page == 'all'%}
-					<option value="pipeline13">Pipeline 1: Naive Bayes + BiLSTM</option>
-					<option value="model5">Model 5: End-to-end BiLSTM</option>
-				{% endif %}
+				<option value="pipeline13">Pipeline 1: Naive Bayes + BiLSTM</option>
+				<option value="model5">Model 5: End-to-end BiLSTM</option>
             </select>
             <button type="button" id="restore">Restore</button>
 		</div>
@@ -58,7 +37,7 @@
 			<textarea class="textarea textinput" spellcheck="false" id="output-area"></textarea>
 		</div>
 		<div class="container">
-			<a href="https://github.com/ljdyer/multi-restore" target="_blank"><img src="static/img/github-logo.png"></img></a>
+			<a href="https://github.com/ljdyer/multi-restore" target="_blank"><img src="img/github-logo.png"></img></a>
 		</div>
 	</body>
 </html>

@@ -7,23 +7,21 @@ loading = false;
 loadingTimeout = '';
 inputText = '';
 
-MODEL_2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
+MODEL2_URL = 'https://model2-spaces.azurewebsites.net/api/restore'
+MODEL5_URL = 'https://model5-all.azurewebsites.net/api/restore'
 
-
-function get_model_2_key(){
+function get_model_key(model){
     return new Promise((resolve) =>
-        fetch("/.netlify/functions/model2-api")
+        fetch("/.netlify/functions/model2-api", {method: 'POST', body: model})
             .then(response => response.text()
                 .then(response => {
-                    // console.log(response);
                     resolve(response);
                 })
             )
     )
 }
 
-function make_api_call(key){
-    model = $('#model').find(":selected").val();
+function run_model(url, key){
     inputText = $('#input-area').val();
     const sendData = JSON.stringify({
         input: inputText,
@@ -31,13 +29,9 @@ function make_api_call(key){
     const headers = {
         'x-functions-key': key,
     }
-    console.log(sendData);
-    console.log(key);
-    console.log(headers);
     loading = true;
     startLoadingAction();
-
-    fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData })
+    fetch(url, { method: 'POST', headers: headers, body: sendData })
         .then(response => response.text().then(response => {
             $('#output-area').val(response);
             stopLoadingAction();
@@ -45,31 +39,21 @@ function make_api_call(key){
 }
 
 async function restore() {
-
-    get_model_2_key().then(key => {
-        make_api_call(key);
-    })
-    
-
-    // else{
-    //     fetch('/model', request).then(response => response.text().then(json_response => {
-    //         response = JSON.parse(json_response);
-    //         $('#output-area').val(response);
-    //         stopLoadingAction();
-    //     }));
-    // }
+    model = $('#model').find(":selected").val();
+    if (model=='model2'){
+        url = MODEL2_URL
+        get_model_key(model).then(key => {
+            run_model(url, key);
+        })
+    } else if (model=='model5'){
+        url = MODEL5_URL
+        get_model_key(model).then(key => {
+            run_model(url, key);
+        })
+    } else {
+        window.alert(`${model} not currently available.`)
+    }
 };
-
-function insertRandomTEDTalk(sampleType) {
-    request = {
-        method: "POST",
-        body: sampleType
-    };
-    fetch('/get_random', request).then(response => response.text().then(json_response => {
-        response = JSON.parse(json_response);
-        $('#input-area').val(response);
-    }));
-}
 
 function processInput(processAction) {
     inputText = $('#input-area').val();
@@ -114,6 +98,13 @@ function addRandomSpaces(inputText) {
         }
     }
     return output
+}
+
+function stopLoadingAction() {
+    $('#input-area').prop('disabled', false);
+    clearTimeout(loadingTimeout);
+    loading = false;
+    $('#input-area').val(inputText);
 }
 
 $(document).ready(function () {
