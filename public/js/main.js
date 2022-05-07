@@ -37,7 +37,7 @@ function make_api_call(key){
     loading = true;
     startLoadingAction();
 
-    fetch(MODEL_2_URL, { method: 'POST', mode: 'no-cors', headers: headers, body: sendData })
+    fetch(MODEL_2_URL, { method: 'POST', headers: headers, body: sendData })
         .then(response => response.text().then(response => {
             $('#output-area').val(response);
             stopLoadingAction();
