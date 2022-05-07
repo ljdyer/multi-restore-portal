@@ -25,7 +25,7 @@ function restore() {
         fetch("/.netlify/functions/model2-api")
         .then(response => response.text()
         .then(json_response => {
-            API_KEY = json_response
+            API_KEY = JSON.parse(json_response);
             console.log(API_KEY)
             const headers = {
                 'x-functions-key': API_KEY,
