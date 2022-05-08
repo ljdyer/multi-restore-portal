@@ -85,7 +85,7 @@ async function restore() {
             run_model(MODEL_URLS[firstModel], key).then(response => {
                 $('#input-area').val(response);
                 console.log(firstModel + ' finished.')
-                stopLoadingAction();
+                stopLoadingAction(replace=false);
                 loadingAction = 'caps_and_punct';
                 get_model_key(secondModel).then(key =>
                     run_model(MODEL_URLS[secondModel], key, response).then(response => {
@@ -163,12 +163,14 @@ function addRandomSpaces(inputText) {
     return output
 }
 
-function stopLoadingAction() {
+function stopLoadingAction(replace=true) {
     $('#input-area').prop('disabled', false);
     $('#restore').prop('disabled', false);
     $('#model').prop('disabled', false);
     clearTimeout(loadingTimeout);
-    $('#input-area').val(inputText);
+    if (replace){
+        $('#input-area').val(inputText);
+    }
     loading = false;
 }
 
