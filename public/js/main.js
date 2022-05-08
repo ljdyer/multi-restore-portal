@@ -1,3 +1,5 @@
+// const { resolve } = require("path");
+
 randomSpaceFrequency = 0.2;
 randomCommaFrequency = 0.15;
 randomPeriodFrequency = 0.15;
@@ -7,12 +9,20 @@ loading = false;
 loadingTimeout = '';
 inputText = '';
 maxInputLength = 1000;
+processAction = '';
+loadingAction = '';
+pipelinePause = 1000;
+
 
 MODEL_URLS = {
     'model1': 'https://model1-spaces.azurewebsites.net/api/restore',
     'model2': 'https://model2-spaces.azurewebsites.net/api/restore',
     'model3': 'https://model3-caps-and-punct.azurewebsites.net/api/restore',
     'model5': 'https://model5-all.azurewebsites.net/api/restore'
+}
+
+function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
 }
 
 function get_model_key(model){
@@ -26,8 +36,10 @@ function get_model_key(model){
     )
 }
 
-function run_model(url, key){
-    inputText = $('#input-area').val();
+function run_model(url, key, inputText = false){
+    if (!inputText){
+        inputText = $('#input-area').val();
+    }
     if (inputText.length === 0){
         window.alert('You need to type something into the input area first!')
         return;
@@ -40,25 +52,58 @@ function run_model(url, key){
     }
     loading = true;
     startLoadingAction();
-    fetch(url, { method: 'POST', headers: headers, body: sendData })
-        .then(response => response.text().then(response => {
-            $('#output-area').val(response);
-            stopLoadingAction();
-        }))
+    return new Promise((resolve) => 
+        fetch(url, { method: 'POST', headers: headers, body: sendData })
+            .then(response => response.text().then(response => {
+                resolve(response);
+            }))
+    )
 }
 
 async function restore() {
+    $('#input-area').prop('disabled', true);
+    $('#restore').prop('disabled', true);
+    $('#model').prop('disabled', true);
     model = $('#model').find(":selected").val();
     url = MODEL_URLS[model]
-    get_model_key(model).then(key => {
-        run_model(url, key);
-    });
+    console.log('Running model: ' + model);
+    // Single model
+    if (model.includes('model')){
+        get_model_key(model).then(key =>
+            run_model(url, key).then(response => {
+                $('#output-area').val(response);
+                stopLoadingAction();
+                console.log(model + ' finished.')
+            })
+        );
+    // Pipeline
+    } else if (model.includes('pipeline')){
+        firstModel = 'model' + model[model.length - 2]
+        secondModel = 'model' + model[model.length - 1]
+        loadingAction = 'spaces';
+        get_model_key(firstModel).then(key =>
+            run_model(MODEL_URLS[firstModel], key).then(response => {
+                $('#input-area').val(response);
+                console.log(firstModel + ' finished.')
+                stopLoadingAction();
+                loadingAction = 'caps_and_punct';
+                get_model_key(secondModel).then(key =>
+                    run_model(MODEL_URLS[secondModel], key, response).then(response => {
+                        $('#output-area').val(response);
+                        console.log(secondModel + ' finished.')
+                        stopLoadingAction();
+                        loadingAction = 'all';
+                    })
+                )
+            })
+        );
+    }
 };
 
-function processInput(processAction) {
+function processInput() {
     inputText = $('#input-area').val();
     inputText = inputText.toLowerCase();
-    if (processAction == 'no_spaces') {
+    if (processAction == 'spaces') {
         inputText = inputText.replaceAll(/[^a-z0-9]/g, '')
     }
     if (processAction == 'lower') {
@@ -66,6 +111,23 @@ function processInput(processAction) {
     }
     inputText = inputText.substr(0,maxInputLength)
     $('#input-area').val(inputText);
+}
+
+function startLoadingAction() {
+    if (loading) {
+        switch (loadingAction){
+            case 'spaces':
+                $('#input-area').val(addRandomSpaces(inputText));
+                break;
+            case 'caps_and_punct':
+                $('#input-area').val(addRandomPunctAndCaps(inputText));
+                break;
+            case 'all':
+                $('#input-area').val(addRandomPunctAndCaps(addRandomSpaces(inputText)));
+                break;
+        }
+        loadingTimeout = setTimeout(startLoadingAction, loadingRefreshRate);
+    }
 }
 
 function addRandomPunctAndCaps(inputText) {
@@ -103,15 +165,28 @@ function addRandomSpaces(inputText) {
 
 function stopLoadingAction() {
     $('#input-area').prop('disabled', false);
+    $('#restore').prop('disabled', false);
+    $('#model').prop('disabled', false);
     clearTimeout(loadingTimeout);
-    loading = false;
     $('#input-area').val(inputText);
+    loading = false;
 }
 
 $(document).ready(function () {
-    $('#restore').click(function () {
-        restore();
-    });
+
+    pageName = window.location.pathname;
+    if (pageName.includes('spaces')) {
+        processAction = 'spaces';
+        loadingAction = 'spaces';
+    } else if (pageName.includes('caps_and_punct')) {
+        processAction = 'lower';
+        loadingAction = 'caps_and_punct';
+    } else if (pageName.includes('all')) {
+        processAction = 'spaces';
+        loadingAction = 'all';
+    }
+    $('#restore').click(restore);
+    $('#input-area').bind('input propertychange', processInput);
     $('#output-area').attr('readonly', true).css("background-color", "#ffffff").addClass('no-input');
     $('#input-area').focus().select();
 });

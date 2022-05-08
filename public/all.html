@@ -6,7 +6,6 @@
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Droid+Sans+Mono" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="js/main.js"></script>
-		<script src="js/all.js"></script>
 		<link href="css/style.css" rel="stylesheet">
 	</head>
 
@@ -28,7 +27,8 @@
         </div>
 		<div class="container extra-spacing">
             <select name="model" id="model">
-				<option value="pipeline13">Pipeline 1: Naive Bayes + BiLSTM</option>
+				<option value="pipeline13">Pipeline 1: Naive Bayes + CRF</option>
+				<option value="pipeline23">Pipeline 3: BiLSTM + CRF</option>
 				<option value="model5">Model 5: End-to-end BiLSTM</option>
             </select>
             <button type="button" id="restore">Restore</button>
