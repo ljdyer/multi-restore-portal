@@ -51,6 +51,7 @@ function run_model(url, key, inputText = false){
         'x-functions-key': key,
     }
     loading = true;
+    $('#input-area').val('')
     startLoadingAction();
     return new Promise((resolve) => 
         fetch(url, { method: 'POST', headers: headers, body: sendData })
@@ -87,6 +88,8 @@ async function restore() {
                 console.log(firstModel + ' finished.')
                 stopLoadingAction(replace=false);
                 loadingAction = 'caps_and_punct';
+                loading = true;
+                startLoadingAction();
                 get_model_key(secondModel).then(key =>
                     run_model(MODEL_URLS[secondModel], key, response).then(response => {
                         $('#output-area').val(response);
