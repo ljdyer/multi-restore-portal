@@ -7,6 +7,7 @@ randomCapFrequency = 0.25;
 loadingRefreshRate = 500;
 loading = false;
 loadingTimeout = '';
+prevInputText = '';
 inputText = '';
 maxInputLength = 1000;
 processAction = '';
@@ -25,7 +26,7 @@ function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 
-function get_model_key(model){
+function getModelKey(model){
     return new Promise((resolve) =>
         fetch("/.netlify/functions/model2-api", {method: 'POST', body: model})
             .then(response => response.text()
@@ -36,14 +37,7 @@ function get_model_key(model){
     )
 }
 
-function run_model(url, key, inputText = false){
-    if (!inputText){
-        inputText = $('#input-area').val();
-    }
-    if (inputText.length === 0){
-        window.alert('You need to type something into the input area first!')
-        return;
-    }
+function callModel(url, key){
     const sendData = JSON.stringify({
         input: inputText,
     });
@@ -61,47 +55,72 @@ function run_model(url, key, inputText = false){
     )
 }
 
-async function restore() {
-    $('#input-area').prop('disabled', true);
-    $('#restore').prop('disabled', true);
-    $('#model').prop('disabled', true);
-    model = $('#model').find(":selected").val();
-    url = MODEL_URLS[model]
+function runModel(model) {
     console.log('Running model: ' + model);
+    url = MODEL_URLS[model]
+    return new Promise((resolve) =>
+        getModelKey(model).then(key =>
+            callModel(url, key).then(response =>
+                resolve(response)
+            )
+        )
+    );
+}
+
+async function restore() {
+    disableAll();
+    $('#output-area').val('');
+    if (inputText.length === 0) {
+        window.alert('You need to type something into the input area first!')
+        return;
+    }
+    inputText = $('#input-area').val();
+    prevInputText = $('#input-area').val();
+    model = $('#model').find(":selected").val();
+
     // Single model
     if (model.includes('model')){
-        get_model_key(model).then(key =>
-            run_model(url, key).then(response => {
-                $('#output-area').val(response);
-                stopLoadingAction();
-                console.log(model + ' finished.')
-            })
-        );
-    // Pipeline
-    } else if (model.includes('pipeline')){
+        runModel(model).then(response => {
+            $('#output-area').val(response);
+            $('#input-area').val(prevInputText);
+            stopLoadingAction();
+            console.log(model + ' finished.')
+        })
+    }
+        
+    // // Pipeline
+    else if (model.includes('pipeline')){
         firstModel = 'model' + model[model.length - 2]
         secondModel = 'model' + model[model.length - 1]
         loadingAction = 'spaces';
-        get_model_key(firstModel).then(key =>
-            run_model(MODEL_URLS[firstModel], key).then(response => {
-                $('#input-area').val(response);
-                console.log(firstModel + ' finished.')
-                stopLoadingAction(replace=false);
-                loadingAction = 'caps_and_punct';
-                loading = true;
-                startLoadingAction();
-                get_model_key(secondModel).then(key =>
-                    run_model(MODEL_URLS[secondModel], key, response).then(response => {
-                        $('#output-area').val(response);
-                        console.log(secondModel + ' finished.')
-                        stopLoadingAction();
-                        loadingAction = 'all';
-                    })
-                )
-            })
-        );
+        runModel(firstModel).then(response => {
+            inputText = response;
+            $('#input-area').val(response);
+            loadingAction = 'caps_and_punct';
+            delay(2000).then(response => 
+                runModel(secondModel).then(response => {
+                    $('#output-area').val(response);
+                    $('#input-area').val(prevInputText);
+                    stopLoadingAction();
+                    loadingAction = 'all';
+                    console.log(model + ' finished.')
+                })
+            )
+        });
     }
 };
+
+function disableAll() {
+    $('#input-area').prop('disabled', true);
+    $('#restore').prop('disabled', true);
+    $('#model').prop('disabled', true);
+}
+
+function enableAll() {
+    $('#input-area').prop('disabled', false);
+    $('#restore').prop('disabled', false);
+    $('#model').prop('disabled', false);
+}
 
 function processInput() {
     inputText = $('#input-area').val();
@@ -111,8 +130,9 @@ function processInput() {
     }
     if (processAction == 'lower') {
         inputText = inputText.replaceAll(/[^a-z0-9 ]/g, '')
+        inputText = inputText.replaceAll(/ +/g, ' ')
     }
-    inputText = inputText.substr(0,maxInputLength)
+    inputText = inputText.substr(0, maxInputLength)
     $('#input-area').val(inputText);
 }
 
@@ -166,14 +186,9 @@ function addRandomSpaces(inputText) {
     return output
 }
 
-function stopLoadingAction(replace=true) {
-    $('#input-area').prop('disabled', false);
-    $('#restore').prop('disabled', false);
-    $('#model').prop('disabled', false);
+function stopLoadingAction() {
+    enableAll()
     clearTimeout(loadingTimeout);
-    if (replace){
-        $('#input-area').val(inputText);
-    }
     loading = false;
 }
 
